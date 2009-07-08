@@ -37,7 +37,10 @@ parser.add_option("-m", "--mountpoint", dest="mountpoint",
                   help="use iPod at MOUNTPOINT", metavar="MOUNTPOINT")
 (options, args) = parser.parse_args()
 
+print "Mounting database..."
 db = gpod.Database(options.mountpoint)
+
+print "Processing database..."
 
 images = {}
 
@@ -45,15 +48,18 @@ trackcount = 0
 
 for track in db:
     trackcount += 1
-    if track.get_coverart().thumbnails:
+    print "Track %d: " % trackcount,
+    print "%(artist)s, %(album)s, %(title)s:" % track
+
+    coverart = track.get_coverart()
+
+    if coverart and coverart.thumbnails:
         #print " Already has artwork, skipping."
         # note we could remove it with track.set_coverart(None)
+        print "  Already has artwork; skipping."
         continue
 
-    print "Track %d: " % trackcount
-    print "%(artist)s, %(album)s, %(title)s" % track
-
-    filename = gpod.itdb_filename_on_ipod(track)
+    filename = track.ipod_filename()
     f = ID3(filename)
     apicframes = f.getall("APIC")
     if len(apicframes) >= 1:
@@ -64,11 +70,11 @@ for track in db:
         loader.close()
         pixbuf = loader.get_pixbuf()
         if (pixbuf.get_width() > 10 or pixbuf.get_height() > 10):
-        try:
-            track.set_coverart(pixbuf)
-            print " Added thumbnails"
-        except KeyError:
-            print " No image available"
+            try:
+                track.set_coverart(pixbuf)
+                print "  Added thumbnails"
+            except KeyError:
+                print "  No image available"
 
 
 print "Saving database"
