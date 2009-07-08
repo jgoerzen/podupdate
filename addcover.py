@@ -60,13 +60,22 @@ for track in db:
         continue
 
     filename = track.ipod_filename()
-    f = ID3(filename)
+    try:
+        f = ID3(filename)
+    except:
+        print "  No ID3 tags; skipping."
+        continue
+
     apicframes = f.getall("APIC")
     if len(apicframes) >= 1:
         frame = apicframes[0]
         image_data = frame.data
         loader = gtk.gdk.PixbufLoader()
-        loader.write(image_data)
+        try:
+            loader.write(image_data)
+        except:
+            print "  Had cover, but in invalid format; skipping."
+            continue
         loader.close()
         pixbuf = loader.get_pixbuf()
         if (pixbuf.get_width() > 10 or pixbuf.get_height() > 10):
