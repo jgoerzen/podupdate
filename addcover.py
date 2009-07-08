@@ -28,6 +28,7 @@ import sys
 import urllib
 import gtk
 import mutagen.mp3
+import mutagen.mp4
 from mutagen.id3 import ID3
 from optparse import OptionParser
 
@@ -46,10 +47,12 @@ images = {}
 
 trackcount = 0
 
+# Filetype is "AAC audio file" or "MPEG audio file" (mp3)
+
 for track in db:
     trackcount += 1
     print "Track %d: " % trackcount,
-    print "%(artist)s, %(album)s, %(title)s:" % track
+    print "%(artist)s, %(album)s, %(title)s, %(filetype)s:" % track
 
     coverart = track.get_coverart()
 
@@ -59,18 +62,37 @@ for track in db:
         print "  Already has artwork; skipping."
         continue
 
+    image_data = None
+    loader = gtk.gdk.PixbufLoader()
+
     filename = track.ipod_filename()
-    try:
-        f = ID3(filename)
-    except:
-        print "  No ID3 tags; skipping."
+    
+    if track['filetype'] == 'MPEG audio file': # MP3
+        try:
+            f = ID3(filename)
+        except:
+            print "  No ID3 tags; skipping."
+            continue
+
+        apicframes = f.getall("APIC")
+        if len(apicframes) >= 1:
+            frame = apicframes[0]
+            image_data = frame.data
+    elif track['filetype'] == 'AAC audio file': # m4a, aac, mp4
+        try:
+            f = mutagen.mp4.MP4(filename)
+        except:
+            print "  MP4 couldn't open track; skipping."
+            continue
+
+        if 'covr' in f.tags:
+            covertag = f.tags['covr'][0]
+            image_data = covertag
+    else:
+        print "  Unknown file format %s; skipping" % track['filetype']
         continue
 
-    apicframes = f.getall("APIC")
-    if len(apicframes) >= 1:
-        frame = apicframes[0]
-        image_data = frame.data
-        loader = gtk.gdk.PixbufLoader()
+    if not (image_data is None):
         try:
             loader.write(image_data)
         except:
@@ -84,6 +106,10 @@ for track in db:
                 print "  Added thumbnails"
             except KeyError:
                 print "  No image available"
+        else:
+            print "  Image was too small to use."
+    else:
+        print "  Found no image data in file."
 
 
 print "Saving database"
