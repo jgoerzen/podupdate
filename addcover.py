@@ -78,7 +78,7 @@ for track in db:
             continue
         loader.close()
         pixbuf = loader.get_pixbuf()
-        if (pixbuf.get_width() > 10 or pixbuf.get_height() > 10):
+        if (pixbuf.get_width() > 10 and pixbuf.get_height() > 10):
             try:
                 track.set_coverart(pixbuf)
                 print "  Added thumbnails"
