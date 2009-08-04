@@ -135,7 +135,7 @@ for track in db:
         convmp4(f, track, '\xa9ART', 'artist')
         # genre
         convmp4(f, track, '\xa9wrt', 'composer')
-        # sort artist
+        convmp4(f, track, 'MusicBrainz Sortname', 'sort_artist')
 
         if 'covr' in f.tags:
             covertag = f.tags['covr'][0]
