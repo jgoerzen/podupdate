@@ -79,8 +79,10 @@ def convmp4(mp4, track, mp4frame, trackattrname):
 
 def setifneeded(track, trackattrname, value):
     if track[trackattrname] != value:
-        print "  %s: %s -> %s" % (trackattrname, track[trackattrname], value)
-        #track[trackattrname] = value
+        print "  %s: %s %s -> %s %s " % (trackattrname,
+                                         track[trackattrname], type(track[trackattrname]),
+                                         value, type(value))
+        track[trackattrname] = value
 
 for track in db:
     trackcount += 1
