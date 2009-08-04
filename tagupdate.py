@@ -31,6 +31,8 @@ import urllib
 import gtk
 import mutagen.mp3
 import mutagen.mp4
+import magic
+
 from mutagen.id3 import ID3
 from optparse import OptionParser
 
@@ -81,7 +83,18 @@ for track in db:
     filename = track.ipod_filename()
     image_data = None
     loader = gtk.gdk.PixbufLoader()
-    
+
+    if track['filetype'] is None or track['filetype'] == 'None':
+        print "  No filetype; guessing..."
+        m = magic.Magic(mime=True)
+        mime = magic.from_file(filename)
+        if mime == 'audio/mpeg':
+            print "  filetype -> MPEG audio file"
+            track['filetype'] == 'MPEG audio file'
+        if mime == 'audio/mp4':
+            print '  filetype -> AAC audio file'
+            track['filetype'] == 'AAC audio file'
+
     if track['filetype'] == 'MPEG audio file' or track['filetype'] == 'mp3': # MP3
         try:
             f = ID3(filename)
