@@ -2,6 +2,8 @@
 
 ##  Copyright (C) 2005 Nick Piper <nick-gtkpod at nickpiper co uk>
 ##  Part of the gtkpod project.
+
+# Copyright (C) 2009 John Goerzen
  
 ##  URL: http://www.gtkpod.org/
 ##  URL: http://gtkpod.sourceforge.net/
@@ -49,23 +51,26 @@ trackcount = 0
 
 # Filetype is "AAC audio file" or "MPEG audio file" (mp3)
 
+def convIt(id3, track, id3frame, trackattrname):
+    id3frames = id3.getall(id3frame)
+    if len(id3frames) == 0:
+        id3data = ""
+    else:
+        id3data = id3frames[0]
+    trackdata = getattr(track, trackattrname)
+    if trackdata != id3data:
+        print "  %s: %s -> %s" % (trackattrname, trackdata, id3data)
+        #setattr(track, trackattrname, id3data)
+
 for track in db:
     trackcount += 1
     print "Track %d: " % trackcount,
     print "%(artist)s, %(album)s, %(title)s, %(filetype)s:" % track
 
     coverart = track.get_coverart()
-
-    if coverart and coverart.thumbnails:
-        #print " Already has artwork, skipping."
-        # note we could remove it with track.set_coverart(None)
-        print "  Already has artwork; skipping."
-        continue
-
+    filename = track.ipod_filename()
     image_data = None
     loader = gtk.gdk.PixbufLoader()
-
-    filename = track.ipod_filename()
     
     if track['filetype'] == 'MPEG audio file': # MP3
         try:
@@ -74,6 +79,13 @@ for track in db:
             print "  No ID3 tags; skipping."
             continue
 
+        convIt(f, track, 'TIT2', 'title')
+        convIt(f, track, 'TALB', 'album')
+        convIt(f, track, 'TPE1', 'artist')
+        # convIt(f, track, '', 'genre')
+        convIt(f, track, 'TCOM', 'composer')
+        convIt(f, track, 'TSOP', 'sort_artist')
+        
         apicframes = f.getall("APIC")
         if len(apicframes) >= 1:
             frame = apicframes[0]
@@ -91,6 +103,13 @@ for track in db:
     else:
         print "  Unknown file format %s; skipping" % track['filetype']
         continue
+
+    if coverart and coverart.thumbnails:
+        #print " Already has artwork, skipping."
+        # note we could remove it with track.set_coverart(None)
+        print "  Already has artwork; skipping."
+        continue
+
 
     if not (image_data is None):
         try:
