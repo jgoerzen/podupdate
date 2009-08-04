@@ -56,11 +56,11 @@ def convIt(id3, track, id3frame, trackattrname):
     if len(id3frames) == 0:
         id3data = ""
     else:
-        id3data = id3frames[0]
-    trackdata = getattr(track, trackattrname)
-    if id3data != '' && trackdata != id3data:
+        id3data = id3frames[0].text[0]
+    trackdata = track[trackattrname]
+    if id3data != '' and trackdata != id3data:
         print "  %s: %s -> %s" % (trackattrname, trackdata, id3data)
-        #setattr(track, trackattrname, id3data)
+        #track[trackattrname] = id3data
 
 def convmp4(mp4, track, mp4frame, trackattrname):
     if mp4frame in mp4.tags:
@@ -68,7 +68,7 @@ def convmp4(mp4, track, mp4frame, trackattrname):
     else:
         mp4data = ''
     trackdata = getattr(track, trackattrname)
-    if mp4data != '' && trackdata != mp4data:
+    if mp4data != '' and trackdata != mp4data:
         print "  %s: %s -> %s" % (trackattrname, trackdata, mp4data)
         #setattr(track, trackattrname, mp4data)
 
@@ -121,7 +121,7 @@ for track in db:
         print "  Unknown file format %s; skipping" % track['filetype']
         continue
 
-    if coverart and coverart.thumbnails:
+    if coverart:
         #print " Already has artwork, skipping."
         # note we could remove it with track.set_coverart(None)
         print "  Already has artwork."
