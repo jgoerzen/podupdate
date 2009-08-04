@@ -70,7 +70,7 @@ def convIt(id3, track, id3frame, trackattrname):
 def convtxxx(id3, track, txxxname, trackattrname):
     id3frames = id3.getall('TXXX')
     for txxx in id3frames:
-        if txxx.desc=txxxname:
+        if txxx.desc == txxxname:
             id3data = txxx.text
             if id3data != '' and trackdata != id3data:
                 print "  %s: %s -> %s" % (trackattrname, trackdata, id3data)
