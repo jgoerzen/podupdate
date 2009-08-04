@@ -62,7 +62,7 @@ def convIt(id3, track, id3frame, trackattrname):
     trackdata = track[trackattrname]
     if id3data != '' and trackdata != id3data:
         print "  %s: %s -> %s" % (trackattrname, trackdata, id3data)
-        #track[trackattrname] = id3data
+        track[trackattrname] = id3data
 
 def convmp4(mp4, track, mp4frame, trackattrname):
     if mp4frame in mp4.tags:
@@ -72,7 +72,12 @@ def convmp4(mp4, track, mp4frame, trackattrname):
     trackdata = track[trackattrname]
     if mp4data != '' and trackdata != mp4data:
         print "  %s: %s -> %s" % (trackattrname, trackdata, mp4data)
-        #track[trackattrname] = mp4data
+        track[trackattrname] = mp4data
+
+def setifneeded(track, trackattrname, value):
+    if track[trackattrname] != value:
+        print "  %s: %s -> %s" % (trackattrname, track[trackattrname], value)
+        #track[trackattrname] = value
 
 for track in db:
     trackcount += 1
@@ -94,6 +99,9 @@ for track in db:
         if mime == 'audio/mp4':
             print '  filetype -> AAC audio file'
             track['filetype'] == 'AAC audio file'
+
+    statvals = os.stat(filename)
+    setifneeded(track, 'size', statvals.st_size)
 
     if track['filetype'] == 'MPEG audio file' or track['filetype'] == 'mp3': # MP3
         try:
