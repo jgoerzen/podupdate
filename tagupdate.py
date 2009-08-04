@@ -67,6 +67,15 @@ def convIt(id3, track, id3frame, trackattrname):
         print "  %s: %s -> %s" % (trackattrname, trackdata, id3data)
         track[trackattrname] = id3data
 
+def convtxxx(id3, track, txxxname, trackattrname):
+    id3frames = id3.getall('TXXX')
+    for txxx in id3frames:
+        if txxx.desc=txxxname:
+            id3data = txxx.text
+            if id3data != '' and trackdata != id3data:
+                print "  %s: %s -> %s" % (trackattrname, trackdata, id3data)
+                # track[trackattrname] = id3data
+
 def convmp4(mp4, track, mp4frame, trackattrname):
     if mp4frame in mp4.tags:
         mp4data = mp4.tags[mp4frame][0]
@@ -121,7 +130,13 @@ for track in db:
         convIt(f, track, 'TPE1', 'artist')
         # convIt(f, track, '', 'genre')
         convIt(f, track, 'TCOM', 'composer')
+        convtxxx(f, track, 'MusicBrainz Album Artist', 'albumartist')
         convIt(f, track, 'TSOP', 'sort_artist')
+        # sort_title
+        # sort_album
+        convtxxx(f, track, 'MusicBrainz Album Artist Sortname', 'sort_albumartist')
+        # sort_composer
+        # compilation
         
         apicframes = f.getall("APIC")
         if len(apicframes) >= 1:
