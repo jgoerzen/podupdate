@@ -42,6 +42,9 @@ parser.add_option("-m", "--mountpoint", dest="mountpoint",
                   help="use iPod at MOUNTPOINT", metavar="MOUNTPOINT")
 (options, args) = parser.parse_args()
 
+ms = magic.open(magic.MAGIC_MIME)
+ms.load()
+
 print "Mounting database..."
 db = gpod.Database(options.mountpoint)
 
@@ -91,12 +94,11 @@ for track in db:
 
     if track['filetype'] is None or track['filetype'] == 'None':
         print "  No filetype; guessing..."
-        m = magic.Magic(mime=True)
-        mime = magic.from_file(filename)
-        if mime == 'audio/mpeg':
+        mime = ms.file(filename)
+        if mime.startswith('audio/mpeg'):
             print "  filetype -> MPEG audio file"
             track['filetype'] == 'MPEG audio file'
-        if mime == 'audio/mp4':
+        if mime.startswith('audio/mp4'):
             print '  filetype -> AAC audio file'
             track['filetype'] == 'AAC audio file'
 
