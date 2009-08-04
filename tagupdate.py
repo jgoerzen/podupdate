@@ -40,10 +40,15 @@ parser = OptionParser()
 parser.add_option("-m", "--mountpoint", dest="mountpoint",
                   default="/mnt/ipod",
                   help="use iPod at MOUNTPOINT", metavar="MOUNTPOINT")
+parser.add_option("-n", "--dry-run", dest="dryrun",
+                  action="store_true", default = False,
+                  help="Don't make changes")
 (options, args) = parser.parse_args()
 
 ms = magic.open(magic.MAGIC_MIME)
 ms.load()
+
+DRYRUN = options.dryrun
 
 print "Mounting database..."
 db = gpod.Database(options.mountpoint)
@@ -65,7 +70,8 @@ def convIt(id3, track, id3frame, trackattrname):
     trackdata = track[trackattrname]
     if id3data != '' and trackdata != id3data:
         print "  %s: %s -> %s" % (trackattrname, trackdata, id3data)
-        track[trackattrname] = id3data
+        if not DRYRUN:
+            track[trackattrname] = id3data
 
 def convtxxx(id3, track, txxxname, trackattrname):
     id3frames = id3.getall('TXXX')
@@ -77,7 +83,8 @@ def convtxxx(id3, track, txxxname, trackattrname):
             # print "Found TXXX data: %s = %s" % (str(txxx.desc), id3data)
             if id3data != '' and trackdata != id3data:
                 print "  %s: %s -> %s" % (trackattrname, trackdata, id3data)
-                # track[trackattrname] = id3data
+                if not DRYRUN:
+                    track[trackattrname] = id3data
 
 def convmp4(mp4, track, mp4frame, trackattrname):
     if mp4frame in mp4.tags:
@@ -87,7 +94,8 @@ def convmp4(mp4, track, mp4frame, trackattrname):
     trackdata = track[trackattrname]
     if mp4data != '' and trackdata != mp4data:
         print "  %s: %s -> %s" % (trackattrname, trackdata, mp4data)
-        track[trackattrname] = mp4data
+        if not DRYRUN:
+            track[trackattrname] = mp4data
 
 def setifneeded(track, trackattrname, value):
     if track[trackattrname] != value:
@@ -96,7 +104,8 @@ def setifneeded(track, trackattrname, value):
                                          value, type(value))
         if type(track[trackattrname]) != type(value):
             print "  NOT CHANGING; TYPES MISMATCH"
-        track[trackattrname] = value
+        if not DRYRUN:
+            track[trackattrname] = value
 
 for track in db:
     trackcount += 1
@@ -113,10 +122,12 @@ for track in db:
         mime = ms.file(filename)
         if mime.startswith('audio/mpeg'):
             print "  filetype -> MPEG audio file"
-            track['filetype'] = 'MPEG audio file'
+            if not DRYRUN:
+                track['filetype'] = 'MPEG audio file'
         if mime.startswith('audio/mp4'):
             print '  filetype -> AAC audio file'
-            track['filetype'] = 'AAC audio file'
+            if not DRYRUN:
+                track['filetype'] = 'AAC audio file'
 
     statvals = os.stat(filename)
     setifneeded(track, 'size', statvals.st_size)
@@ -205,7 +216,8 @@ for track in db:
         pixbuf = loader.get_pixbuf()
         if (pixbuf.get_width() > 10 and pixbuf.get_height() > 10):
             try:
-                track.set_coverart(pixbuf)
+                if not DRYRUN:
+                    track.set_coverart(pixbuf)
                 print "  -> Added thumbnails"
             except KeyError:
                 print "  No image available"
