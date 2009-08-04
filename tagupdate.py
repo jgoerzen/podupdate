@@ -82,7 +82,7 @@ for track in db:
     image_data = None
     loader = gtk.gdk.PixbufLoader()
     
-    if track['filetype'] == 'MPEG audio file': # MP3
+    if track['filetype'] == 'MPEG audio file' or track['filetype'] == 'mp3': # MP3
         try:
             f = ID3(filename)
         except:
