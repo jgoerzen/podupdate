@@ -82,6 +82,8 @@ def setifneeded(track, trackattrname, value):
         print "  %s: %s %s -> %s %s " % (trackattrname,
                                          track[trackattrname], type(track[trackattrname]),
                                          value, type(value))
+        if type(track[trackattrname]) != type(value):
+            print "  NOT CHANGING; TYPES MISMATCH"
         track[trackattrname] = value
 
 for track in db:
