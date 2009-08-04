@@ -97,10 +97,10 @@ for track in db:
         mime = ms.file(filename)
         if mime.startswith('audio/mpeg'):
             print "  filetype -> MPEG audio file"
-            track['filetype'] == 'MPEG audio file'
+            track['filetype'] = 'MPEG audio file'
         if mime.startswith('audio/mp4'):
             print '  filetype -> AAC audio file'
-            track['filetype'] == 'AAC audio file'
+            track['filetype'] = 'AAC audio file'
 
     statvals = os.stat(filename)
     setifneeded(track, 'size', statvals.st_size)
