@@ -69,9 +69,12 @@ def convIt(id3, track, id3frame, trackattrname):
 
 def convtxxx(id3, track, txxxname, trackattrname):
     id3frames = id3.getall('TXXX')
+    # print "TXXX looking for: %s" % str(txxxname)
     for txxx in id3frames:
+        # print "TXXX desc: %s, data: %s" % (str(txxx.desc), txxx.text)
         if txxx.desc == txxxname:
-            id3data = txxx.text
+            id3data = txxx.text[0]
+            # print "Found TXXX data: %s = %s" % (str(txxx.desc), id3data)
             if id3data != '' and trackdata != id3data:
                 print "  %s: %s -> %s" % (trackattrname, trackdata, id3data)
                 # track[trackattrname] = id3data
