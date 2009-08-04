@@ -139,7 +139,14 @@ for track in db:
         # sort_album
         convtxxx(f, track, 'MusicBrainz Album Artist Sortname', 'sort_albumartist')
         # sort_composer
-        # compilation
+
+        tcmpframes = f.getall('TCMP')
+        if len(tcmpframes) > 0:
+            tcmp = tcmpframes[0].text[0]
+            if tcmp == '0' or tcmp == '\0':
+                setifneeded(track, 'compilation', 0)
+            if tcmp == '1' or tcmp == '\1':
+                setifneeded(track, 'compilation', 1)
         
         apicframes = f.getall("APIC")
         if len(apicframes) >= 1:
@@ -160,6 +167,14 @@ for track in db:
         convmp4(f, track, 'MusicBrainz Album Artist', 'albumartist')
         convmp4(f, track, 'MusicBrainz Sortname', 'sort_artist')
         convmp4(f, track, 'MusicBrainz Album Artist Sortname', 'sort_albumartist')
+
+        if 'cpil' in f.tags:
+            tcmp = f.tags['cpil']
+            # print "tcmp: %s %s " % (tcmp, type(tcmp))
+            if tcmp == False or tcmp == '0' or tcmp == '\0':
+                setifneeded(track, 'compilation', 0)
+            if tcmp == True or tcmp == '1' or tcmp == '\1':
+                setifneeded(track, 'compilation', 1)
 
         if 'covr' in f.tags:
             covertag = f.tags['covr'][0]
