@@ -98,7 +98,12 @@ for track in db:
         except:
             print "  Had cover, but in invalid format; skipping."
             continue
-        loader.close()
+        try:
+            loader.close()
+        except:
+            print "  Invalid image (zero-width?); skipping."
+            continue
+
         pixbuf = loader.get_pixbuf()
         if (pixbuf.get_width() > 10 and pixbuf.get_height() > 10):
             try:
