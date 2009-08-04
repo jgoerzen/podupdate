@@ -67,10 +67,10 @@ def convmp4(mp4, track, mp4frame, trackattrname):
         mp4data = mp4.tags[mp4frame][0]
     else:
         mp4data = ''
-    trackdata = getattr(track, trackattrname)
+    trackdata = track[trackattrname]
     if mp4data != '' and trackdata != mp4data:
         print "  %s: %s -> %s" % (trackattrname, trackdata, mp4data)
-        #setattr(track, trackattrname, mp4data)
+        #track[trackattrname] = mp4data
 
 for track in db:
     trackcount += 1
@@ -144,7 +144,7 @@ for track in db:
         if (pixbuf.get_width() > 10 and pixbuf.get_height() > 10):
             try:
                 track.set_coverart(pixbuf)
-                print "  Added thumbnails"
+                print "  -> Added thumbnails"
             except KeyError:
                 print "  No image available"
         else:
