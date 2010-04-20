@@ -40,9 +40,6 @@ parser = OptionParser()
 parser.add_option("-m", "--mountpoint", dest="mountpoint",
                   default="/mnt/ipod",
                   help="use iPod at MOUNTPOINT", metavar="MOUNTPOINT")
-parser.add_option("-n", "--dry-run", dest="dryrun",
-                  action="store_true", default = False,
-                  help="Don't make changes")
 (options, args) = parser.parse_args()
 
 ms = magic.open(magic.MAGIC_MIME)
